@@ -1,0 +1,10 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="rest-assured-java-api-testing" verbose="1">
+    <test name="api-tests">
+        <classes>
+            <class name="com.mcsolo.tests.PostsCrudTest"/>
+            <class name="com.mcsolo.tests.AuthTest"/>
+            <class name="com.mcsolo.tests.NegativeAndSchemaTest"/>
+        </classes>
+    </test>
+</suite>

@@ -1,0 +1,25 @@
+{
+    "expected": {
+        "totalPosts": 100
+    },
+    "payloads": {
+        "createPost": {
+            "body": "first post body",
+            "title": "hello from rest assured",
+            "userId": 1
+        },
+        "patchPost": {
+            "title": "patched title"
+        },
+        "schemaCheckPost": {
+            "body": "schema check body",
+            "title": "schema check",
+            "userId": 1
+        },
+        "updatePost": {
+            "body": "updated body",
+            "title": "updated title",
+            "userId": 1
+        }
+    }
+}

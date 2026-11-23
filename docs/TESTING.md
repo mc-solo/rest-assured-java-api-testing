@@ -9,14 +9,17 @@ data, but nothing is really saved.
 | Class | Tests | Covers |
 | --- | --- | --- |
 | `PostsCrudTest` | 7 | GET all posts (100), GET filtered by user (10 for user 1), GET one post by id, POST (201 + echo), PUT, PATCH, DELETE (200 + `{}`) |
+| `PostsDataDrivenTest` | 6 | TestNG data provider over 3 rows from `test-data/data-driven-posts.json`: create post (201 + echo) and get post by id, per row |
 | `AuthTest` | 7 | Basic auth valid / wrong password / wrong username / missing (401s) against httpbin `/basic-auth`, bearer token valid / missing against httpbin `/bearer`, custom header sent to JSONPlaceholder |
 | `NegativeAndSchemaTest` | 6 | 404 for unknown id, non-numeric id (`{}` body), unknown route; JSON schema validation for a single post and a created post (`schemas/post-schema.json`); required fields on every item in the full list |
-| **Total** | **20** | |
+| **Total** | **26** | |
 
 Test data (payloads, ids, dummy credentials, expected counts) lives in
-`src/test/resources/test-data/` (`posts.json`, `users.json`, `auth.json`)
-and is loaded by `TestDataLoader`. No payloads or credentials are
-hard-coded in the test classes.
+`src/test/resources/test-data/` (`posts.json`, `users.json`, `auth.json`,
+`data-driven-posts.json`) and is loaded by `TestDataLoader`. No payloads
+or credentials are hard-coded in the test classes. To add a data-driven
+row, add an object to the `rows` array in
+`data-driven-posts.json` — no code change is needed.
 
 ## How to run
 

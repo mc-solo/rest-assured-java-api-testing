@@ -3,6 +3,7 @@
     <test name="api-tests">
         <classes>
             <class name="com.mcsolo.tests.PostsCrudTest"/>
+            <class name="com.mcsolo.tests.PostsDataDrivenTest"/>
             <class name="com.mcsolo.tests.AuthTest"/>
             <class name="com.mcsolo.tests.NegativeAndSchemaTest"/>
         </classes>

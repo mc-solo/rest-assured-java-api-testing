@@ -21,11 +21,11 @@ Java 17, Maven, TestNG. No real server or test data setup needed.
     │   ├── clients/PostsClient.java    # /posts calls
     │   ├── clients/AuthClient.java     # httpbin auth calls
     │   ├── helpers/TestDataLoader.java # loads JSON test data
-    │   └── tests/                      # BaseTest, PostsCrudTest, AuthTest, NegativeAndSchemaTest
+    │   └── tests/                      # BaseTest, PostsCrudTest, PostsDataDrivenTest, AuthTest, NegativeAndSchemaTest
     └── resources/
         ├── config/                     # config.properties, dev.properties, prod.properties
         ├── schemas/post-schema.json
-        ├── test-data/                  # posts.json, users.json, auth.json
+        ├── test-data/                  # posts.json, users.json, auth.json, data-driven-posts.json
         └── testng.xml
 ```
 
@@ -33,6 +33,8 @@ Java 17, Maven, TestNG. No real server or test data setup needed.
 
 - `PostsCrudTest` — GET all posts, GET posts filtered by user, GET one post
   by id, POST, PUT, PATCH and DELETE on `/posts`.
+- `PostsDataDrivenTest` — TestNG data provider over 3 rows from
+  `test-data/data-driven-posts.json`: create post and get post by id, per row.
 - `AuthTest` — basic auth with good, wrong and missing credentials, bearer
   token with and without a token, plus a custom header sent to JSONPlaceholder.
   JSONPlaceholder has no auth of its own, so the real auth checks run
@@ -81,8 +83,10 @@ download dependencies from Maven Central on the first run.
 
 ## Test results
 
-20 tests in 3 classes (7 in `PostsCrudTest`, 7 in `AuthTest`, 6 in
-`NegativeAndSchemaTest`).
+26 tests in 4 classes (7 in `PostsCrudTest`, 6 in `PostsDataDrivenTest`,
+7 in `AuthTest`, 6 in `NegativeAndSchemaTest`). The data-driven class
+was added after the 20-test suite and has not been run yet, same as
+the rest of the suite (see the honest status below).
 
 Honest status: `mvn test` has **never** been run. What was verified in
 this sandbox is `mvn -o validate` — BUILD SUCCESS — and a `javac`

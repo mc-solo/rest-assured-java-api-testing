@@ -6,7 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,6 +26,7 @@ public final class TestDataLoader {
     private static final String POSTS_FILE = "test-data/posts.json";
     private static final String USERS_FILE = "test-data/users.json";
     private static final String AUTH_FILE = "test-data/auth.json";
+    private static final String DATA_DRIVEN_FILE = "test-data/data-driven-posts.json";
 
     private TestDataLoader() {
     }
@@ -56,6 +59,19 @@ public final class TestDataLoader {
         }
         return MAPPER.convertValue(node, new TypeReference<Map<String, Object>>() {
         });
+    }
+
+    /** Data-driven rows from {@code test-data/data-driven-posts.json}, one map per row. */
+    public static List<Map<String, Object>> dataDrivenPostRows() {
+        List<Map<String, Object>> rows = new ArrayList<>();
+        for (JsonNode row : load(DATA_DRIVEN_FILE).path("rows")) {
+            rows.add(MAPPER.convertValue(row, new TypeReference<Map<String, Object>>() {
+            }));
+        }
+        if (rows.isEmpty()) {
+            throw new IllegalStateException("No rows in " + DATA_DRIVEN_FILE);
+        }
+        return rows;
     }
 
     /** Expected total number of posts returned by GET /posts. */

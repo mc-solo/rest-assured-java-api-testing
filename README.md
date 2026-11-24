@@ -19,13 +19,14 @@ Java 17, Maven, TestNG. No real server or test data setup needed.
     ├── java/com/mcsolo/
     │   ├── config/TestConfig.java      # env var > -D > .env > config/{env}.properties > defaults
     │   ├── clients/PostsClient.java    # /posts calls
+    │   ├── clients/UsersClient.java    # /users + /comments calls
     │   ├── clients/AuthClient.java     # httpbin auth calls
     │   ├── helpers/TestDataLoader.java # loads JSON test data
-    │   └── tests/                      # BaseTest, PostsCrudTest, PostsDataDrivenTest, AuthTest, NegativeAndSchemaTest
+    │   └── tests/                      # BaseTest, PostsCrudTest, PostsDataDrivenTest, UsersCrudTest, AuthTest, NegativeAndSchemaTest
     └── resources/
         ├── config/                     # config.properties, dev.properties, prod.properties
         ├── schemas/post-schema.json
-        ├── test-data/                  # posts.json, users.json, auth.json, data-driven-posts.json
+        ├── test-data/                  # posts.json, users.json, users-crud.json, auth.json, data-driven-posts.json
         └── testng.xml
 ```
 
@@ -35,6 +36,9 @@ Java 17, Maven, TestNG. No real server or test data setup needed.
   by id, POST, PUT, PATCH and DELETE on `/posts`.
 - `PostsDataDrivenTest` — TestNG data provider over 3 rows from
   `test-data/data-driven-posts.json`: create post and get post by id, per row.
+- `UsersCrudTest` — GET all users, GET one user by id, POST, PUT, PATCH
+  and DELETE on `/users`, plus GET comments for a post and GET one
+  comment by id (`/posts/{id}/comments`, `/comments/{id}`).
 - `AuthTest` — basic auth with good, wrong and missing credentials, bearer
   token with and without a token, plus a custom header sent to JSONPlaceholder.
   JSONPlaceholder has no auth of its own, so the real auth checks run
@@ -70,6 +74,7 @@ To run one class only:
 
 ```bash
 mvn -Dtest=PostsCrudTest test
+mvn -Dtest=UsersCrudTest test
 ```
 
 To run against different base URIs (for example a local stub):
@@ -83,10 +88,10 @@ download dependencies from Maven Central on the first run.
 
 ## Test results
 
-26 tests in 4 classes (7 in `PostsCrudTest`, 6 in `PostsDataDrivenTest`,
-7 in `AuthTest`, 6 in `NegativeAndSchemaTest`). The data-driven class
-was added after the 20-test suite and has not been run yet, same as
-the rest of the suite (see the honest status below).
+34 tests in 5 classes (7 in `PostsCrudTest`, 6 in `PostsDataDrivenTest`,
+8 in `UsersCrudTest`, 7 in `AuthTest`, 6 in `NegativeAndSchemaTest`). The
+data-driven class was added after the 20-test suite and has not been run
+yet, same as the rest of the suite (see the honest status below).
 
 Honest status: `mvn test` has **never** been run. What was verified in
 this sandbox is `mvn -o validate` — BUILD SUCCESS — and a `javac`
@@ -98,8 +103,25 @@ and counts in the tests were checked against the live APIs with curl
 first (GET list is 100 posts, `userId=1` returns 10, POST returns 201,
 PUT/PATCH return 200, DELETE returns 200, unknown ids and routes return
 404, httpbin basic auth returns 401 without or with wrong credentials and
-200 with the demo `user` / `passwd`). But `mvn test` could not run here:
+200 with the demo `user` / `passwd`; GET users is 10 users, user 1 is
+Leanne Graham / Bret / Sincere@april.biz, POST /users returns 201 with
+id 11, PUT/PATCH /users/1 return 200, DELETE /users/1 returns 200 with
+`{}`, post 1 has 5 comments, comment 1 is `id labore ex et quam laborum`
+from Eliseo@gardner.biz). But `mvn test` could not run here:
 this sandbox blocks direct TCP connections from Java processes, so Maven
 cannot download dependencies and the tests cannot reach the internet
 from the JVM. Run `mvn test` on your own machine (or any machine with
 normal internet) for the first real run, then record the result here.
+
+## Diagram
+
+```mermaid
+flowchart LR
+    ENV[.env] --> CFG[config/]
+    CFG --> BT[BaseTest]
+    TD[test-data/] --> HL[TestDataLoader]
+    HL --> CL[clients/]
+    CL --> TST[tests/]
+    BT --> TST
+    TST --> API[demo API]
+```

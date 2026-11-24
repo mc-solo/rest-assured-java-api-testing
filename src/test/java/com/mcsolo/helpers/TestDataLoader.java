@@ -25,6 +25,7 @@ public final class TestDataLoader {
 
     private static final String POSTS_FILE = "test-data/posts.json";
     private static final String USERS_FILE = "test-data/users.json";
+    private static final String USERS_CRUD_FILE = "test-data/users-crud.json";
     private static final String AUTH_FILE = "test-data/auth.json";
     private static final String DATA_DRIVEN_FILE = "test-data/data-driven-posts.json";
 
@@ -119,6 +120,77 @@ public final class TestDataLoader {
     /** A route that does not exist on the API, for the 404 test. */
     public static String unknownRoute() {
         return requiredText(load(USERS_FILE).path("unknownRoute"), "unknownRoute");
+    }
+
+    // ---- users CRUD / comments (test-data/users-crud.json) ----
+
+    /** A user payload from {@code payloads.<key>} in users-crud.json, as a map Rest Assured can send as JSON. */
+    public static Map<String, Object> userPayload(String key) {
+        JsonNode node = load(USERS_CRUD_FILE).path("payloads").path(key);
+        if (node.isMissingNode()) {
+            throw new IllegalArgumentException("No user payload named '" + key + "' in " + USERS_CRUD_FILE);
+        }
+        return MAPPER.convertValue(node, new TypeReference<Map<String, Object>>() {
+        });
+    }
+
+    /** Expected total number of users returned by GET /users. */
+    public static int expectedTotalUsers() {
+        return requiredInt(load(USERS_CRUD_FILE).path("expected").path("totalUsers"), "expected.totalUsers");
+    }
+
+    /** Id of the known user used across tests (JSONPlaceholder user 1). */
+    public static int knownUserId() {
+        return requiredInt(load(USERS_CRUD_FILE).path("knownUser").path("id"), "knownUser.id");
+    }
+
+    /** Name of the known user. */
+    public static String knownUserName() {
+        return requiredText(load(USERS_CRUD_FILE).path("knownUser").path("name"), "knownUser.name");
+    }
+
+    /** Username of the known user. */
+    public static String knownUserUsername() {
+        return requiredText(load(USERS_CRUD_FILE).path("knownUser").path("username"), "knownUser.username");
+    }
+
+    /** Email of the known user. */
+    public static String knownUserEmail() {
+        return requiredText(load(USERS_CRUD_FILE).path("knownUser").path("email"), "knownUser.email");
+    }
+
+    /** Id of the post whose comments are checked (JSONPlaceholder post 1). */
+    public static int knownPostIdForComments() {
+        return requiredInt(load(USERS_CRUD_FILE).path("knownPost").path("id"), "knownPost.id");
+    }
+
+    /** Expected number of comments on the known post. */
+    public static int expectedCommentsForPost(int postId) {
+        JsonNode knownPost = load(USERS_CRUD_FILE).path("knownPost");
+        if (knownPost.path("id").asInt() == postId) {
+            return requiredInt(knownPost.path("expectedCommentCount"), "knownPost.expectedCommentCount");
+        }
+        throw new IllegalArgumentException("No expected comment count for postId " + postId + " in " + USERS_CRUD_FILE);
+    }
+
+    /** Id of the known comment used across tests (JSONPlaceholder comment 1). */
+    public static int knownCommentId() {
+        return requiredInt(load(USERS_CRUD_FILE).path("knownComment").path("id"), "knownComment.id");
+    }
+
+    /** Post the known comment belongs to. */
+    public static int knownCommentPostId() {
+        return requiredInt(load(USERS_CRUD_FILE).path("knownComment").path("postId"), "knownComment.postId");
+    }
+
+    /** Name (title) of the known comment. */
+    public static String knownCommentName() {
+        return requiredText(load(USERS_CRUD_FILE).path("knownComment").path("name"), "knownComment.name");
+    }
+
+    /** Email of the known comment's author. */
+    public static String knownCommentEmail() {
+        return requiredText(load(USERS_CRUD_FILE).path("knownComment").path("email"), "knownComment.email");
     }
 
     // ---- auth (test-data/auth.json, dummy demo credentials only) ----

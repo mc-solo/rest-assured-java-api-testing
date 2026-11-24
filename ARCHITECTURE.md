@@ -1,5 +1,18 @@
 # Architecture
 
+## Diagram
+
+```mermaid
+flowchart LR
+    ENV[.env] --> CFG[config/]
+    CFG --> BT[BaseTest]
+    TD[test-data/] --> HL[TestDataLoader]
+    HL --> CL[clients/]
+    CL --> TST[tests/]
+    BT --> TST
+    TST --> API[demo API]
+```
+
 ## Folder tree
 
 ```text
@@ -19,12 +32,15 @@ rest-assured-java-api-testing/
     │   │                             #   > config.properties > hard-coded demo-API fallback
     │   ├── clients/
     │   │   ├── PostsClient.java      # thin wrapper over JSONPlaceholder /posts calls
+    │   │   ├── UsersClient.java      # thin wrapper over JSONPlaceholder /users + /comments calls
     │   │   └── AuthClient.java       # thin wrapper over httpbin auth calls
     │   ├── helpers/
     │   │   └── TestDataLoader.java   # loads JSON test data from test-data/
     │   └── tests/
     │       ├── BaseTest.java         # shared setup: base URIs, timeouts, specs, clients
     │       ├── PostsCrudTest.java    # CRUD on /posts (7 tests)
+    │       ├── PostsDataDrivenTest.java  # data-driven /posts (6 tests)
+    │       ├── UsersCrudTest.java    # CRUD on /users + /comments (8 tests)
     │       ├── AuthTest.java         # basic/bearer auth + custom header (7 tests)
     │       └── NegativeAndSchemaTest.java  # 404s, JSON schema, required fields (6 tests)
     └── resources/
@@ -37,8 +53,9 @@ rest-assured-java-api-testing/
         ├── test-data/                # CANONICAL test-data location (see below)
         │   ├── posts.json            # post payloads + expected list size
         │   ├── users.json            # known/unknown ids, filter user, unknown route
+        │   ├── users-crud.json       # user payloads, known user/comment, expected counts
         │   └── auth.json             # dummy demo credentials, bearer token, custom header
-        └── testng.xml                # TestNG suite: the 3 test classes
+        └── testng.xml                # TestNG suite: the 5 test classes
 ```
 
 ## Why each folder exists
@@ -63,6 +80,7 @@ env var / -D property / .env / config/{env}.properties / config.properties
                         ├─> RestAssured.baseURI + timeouts
                         ├─> requestSpec (JSON in/out)
                         ├─> PostsClient (JSONPlaceholder /posts)
+                        ├─> UsersClient (JSONPlaceholder /users + /comments)
                         └─> AuthClient  (httpbin auth endpoints)
 
 test-data/*.json ──> TestDataLoader ──> tests (payloads, ids, dummy credentials)
@@ -90,7 +108,7 @@ demo APIs. See `docs/SETUP.md` for the full key list.
 2. **New endpoint?** Add a method to the matching client in
    `clients/` (`PostsClient`, `AuthClient`, or a new `*Client` class).
    Keep it to one HTTP call, no assertions.
-3. **New test class?** Extend `BaseTest`, use `postsClient` / `authClient`,
+3. **New test class?** Extend `BaseTest`, use `postsClient` / `usersClient` / `authClient`,
    keep every assertion in the test method. Register the class in
    `src/test/resources/testng.xml`.
 4. **New config?** Add the key to `TestConfig` with an env var name, a

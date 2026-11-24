@@ -2,6 +2,7 @@ package com.mcsolo.tests;
 
 import com.mcsolo.clients.AuthClient;
 import com.mcsolo.clients.PostsClient;
+import com.mcsolo.clients.UsersClient;
 import com.mcsolo.config.TestConfig;
 import com.mcsolo.helpers.TestDataLoader;
 import io.restassured.RestAssured;
@@ -42,6 +43,7 @@ public class BaseTest {
 
     protected RequestSpecification requestSpec;
     protected PostsClient postsClient;
+    protected UsersClient usersClient;
     protected AuthClient authClient;
 
     @BeforeClass
@@ -56,6 +58,7 @@ public class BaseTest {
                 .setAccept(ContentType.JSON)
                 .build();
         postsClient = new PostsClient(requestSpec);
+        usersClient = new UsersClient(requestSpec);
         authClient = new AuthClient(HTTPBIN_URI,
                 TestDataLoader.basicAuthUsername("valid"),
                 TestDataLoader.basicAuthPassword("valid"));
